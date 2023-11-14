@@ -10,6 +10,7 @@ TagManager:
   - planche
   - nuage
   - particuleNuage
+  - checkPoint2
   layers:
   - Default
   - TransparentFX

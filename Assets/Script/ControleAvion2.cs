@@ -40,7 +40,8 @@ public class ControleAvion2 : MonoBehaviour
     //en lien avec la course
     public GameObject ligneDepart;
     public GameObject checkPoint;
-    public GameObject prochainCheckPoint;
+    public GameObject prochainCheckPoint1;//pour le niveau 1
+    public GameObject prochainCheckPoint2;//pour le niveau 2
     public GameObject[] tousLesCheckPoints;
     public List<GameObject> checkpointsTraverses;
     public int indexCheckpoints;
@@ -80,7 +81,13 @@ public class ControleAvion2 : MonoBehaviour
         explosionNuage.Pause();
 
         //faire en sorte que tout les checkpoints du niveau 1 rentre dans le tableau pour ensuite verifier si ils ont ete traverses
-        tousLesCheckPoints = GameObject.FindGameObjectsWithTag("checkPoint");
+        if(SceneManager.GetActiveScene().name == "niveau1")
+        {
+            tousLesCheckPoints = GameObject.FindGameObjectsWithTag("checkPoint");
+        }else if(SceneManager.GetActiveScene().name == "niveau2")
+        {
+            tousLesCheckPoints = GameObject.FindGameObjectsWithTag("checkPoint2");
+        }
         tousLesCheckPoints.OrderBy(cp => cp.name).Select(cp => cp.transform).ToArray();
         Array.Sort(tousLesCheckPoints, (cp1, cp2) => string.Compare(cp1.name, cp2.name, StringComparison.Ordinal));
         indexCheckpoints = 0;
@@ -103,15 +110,26 @@ public class ControleAvion2 : MonoBehaviour
             rotationZDescendre = 0;
         }
         //redemarrer le niveau (compteur = 0 et position de l'avion au debut) recommencer a 0
-        if (Input.GetKeyDown(KeyCode.Return)) 
+        if (Input.GetKeyDown(KeyCode.Return))
         {
-            SceneManager.LoadScene("jeu");
-        } 
-
+            if (SceneManager.GetActiveScene().name == "niveau1")
+            {
+                SceneManager.LoadScene("niveau1");
+            }
+            else if (SceneManager.GetActiveScene().name == "niveau2")
+            {
+                SceneManager.LoadScene("niveau2");
+            }
+        }
         //------------------------------------------------- Indication du circuit ----------------------------------------------//
         // la fleche pointe vers le haut puis qunad on est vraimment proche du CP elle se met a tourner juste un peu
-        flecheCheckPoint.transform.LookAt(prochainCheckPoint.transform.position);
-
+        if(SceneManager.GetActiveScene().name == "niveau1")
+        {
+            flecheCheckPoint.transform.LookAt(prochainCheckPoint1.transform.position);
+        }else if(SceneManager.GetActiveScene().name == "niveau2")
+        {
+            flecheCheckPoint.transform.LookAt(prochainCheckPoint2.transform.position);
+        }
     }
 
     // Update is called once per frame
@@ -231,7 +249,7 @@ public class ControleAvion2 : MonoBehaviour
         }
 
         //afficher le temps lorsque l'avion passe dans un checkpoint + verifier si l'Avion est passe dans le checkpoin + changer la cible de la fleche
-        if(infoCollision.gameObject.tag == "checkPoint" && !checkpointsTraverses.Contains(infoCollision.gameObject))
+        if(infoCollision.gameObject.tag == "checkPoint" || infoCollision.gameObject.tag == "checkPoint2" && !checkpointsTraverses.Contains(infoCollision.gameObject))
         {
             TMPchronometre.GetComponent<TextMeshProUGUI>().text = minutes.ToString() + " : " + secondes.ToString() + " : " + milisecondes.ToString();
             Invoke("AffichageTemps", 1.5f);
@@ -245,27 +263,50 @@ public class ControleAvion2 : MonoBehaviour
         //detection de la fin du parcour ----- afficher le temps, proposer d'autres niveaux ou de rejouer.
         if(infoCollision.gameObject.name == "ligneArrivee" && checkpointsTraverses.Count == tousLesCheckPoints.Length)
         {
-            CancelInvoke("MilliSecondex#");
+            CancelInvoke("MilliSeconde");
             TMPchronometre.GetComponent<TextMeshProUGUI>().text = minutes.ToString() + " : " + secondes.ToString() + " : " + milisecondes.ToString();
 
 
-            //niveau 1 en bas de 1minutes 40secondes -- medaile or
-            if(minutes < 1 && secondes <= 60)
+            if(SceneManager.GetActiveScene().name == "niveau1")
             {
-                medaileOr.SetActive(true);
-                medaileOr.GetComponent<Animator>().SetBool("victoire", true);
-            }
-            //niveau 1 en bas de 2minutes 10secondes mais plus haut que 2minutes 40secondes -- medaile argent
-            else if(minutes > 1 && minutes <= 2 && secondes <= 30)
+                //niveau 1 en bas de 1minutes 40secondes -- medaile or
+                if(minutes < 1 && secondes <= 60)
+                {
+                    medaileOr.SetActive(true);
+                    medaileOr.GetComponent<Animator>().SetBool("victoire", true);
+                }
+                //niveau 1 en bas de 2minutes 10secondes mais plus haut que 2minutes 40secondes -- medaile argent
+                else if(minutes > 1 && minutes <= 2 && secondes <= 30)
+                {
+                    medaileArgent.SetActive(true);
+                    medaileArgent.GetComponent<Animator>().SetBool("victoire", true);
+                }
+                //niveau 1 en haut de 2 minutes 30secondes -- medaile bronze
+                else if( minutes >=2 && minutes <= 3&& secondes >=30 )
+                {
+                    medaileBronze.SetActive(true);
+                    medaileBronze.GetComponent<Animator>().SetBool("victoire", true);
+                }
+            }else if(SceneManager.GetActiveScene().name == "niveau2")
             {
-                medaileArgent.SetActive(true);
-                medaileArgent.GetComponent<Animator>().SetBool("victoire", true);
-            }
-            //niveau 1 en haut de 2 minutes 30secondes -- medaile bronze
-            else if( minutes >=2 && minutes <= 3&& secondes >=30 )
-            {
-                medaileBronze.SetActive(true);
-                medaileBronze.GetComponent<Animator>().SetBool("victoire", true);
+                //niveau 2 en bas de 1minutes 40secondes -- medaile or
+                if (minutes < 1 && secondes <= 60)
+                {
+                    medaileOr.SetActive(true);
+                    medaileOr.GetComponent<Animator>().SetBool("victoire", true);
+                }
+                //niveau 2 en bas de 2minutes 10secondes mais plus haut que 2minutes 40secondes -- medaile argent
+                else if (minutes > 1 && minutes <= 2 && secondes <= 30)
+                {
+                    medaileArgent.SetActive(true);
+                    medaileArgent.GetComponent<Animator>().SetBool("victoire", true);
+                }
+                //niveau 2 en haut de 2 minutes 30secondes -- medaile bronze
+                else if (minutes >= 2 && minutes <= 3 && secondes >= 30)
+                {
+                    medaileBronze.SetActive(true);
+                    medaileBronze.GetComponent<Animator>().SetBool("victoire", true);
+                }
             }
 
         }else if (infoCollision.gameObject.name == "ligneArrivee" && checkpointsTraverses.Count != tousLesCheckPoints.Length)
@@ -335,15 +376,28 @@ public class ControleAvion2 : MonoBehaviour
     {
         //passer au prochain checkpoint
        if(indexCheckpoints < tousLesCheckPoints.Length) 
-       { 
-            prochainCheckPoint = tousLesCheckPoints[indexCheckpoints];
+       {
+            if (SceneManager.GetActiveScene().name == "niveau1")
+            {
+                prochainCheckPoint1 = tousLesCheckPoints[indexCheckpoints];
+            }else if (SceneManager.GetActiveScene().name == "niveau2")
+            {
+                prochainCheckPoint2 = tousLesCheckPoints[indexCheckpoints];
+            }
        }
     }
 
     //------------------------ Redemarer la scene --------------------------------//
     public void ReloadScene()
     {
-        SceneManager.LoadScene("jeu");
+        if (SceneManager.GetActiveScene().name == "niveau1")
+        {
+            SceneManager.LoadScene("niveau1");
+        }
+        else if (SceneManager.GetActiveScene().name == "niveau2")
+        {
+            SceneManager.LoadScene("niveau2");
+        }
         GetComponent<AudioSource>().Pause();
     }
 }
