@@ -289,8 +289,8 @@ public class ControleAvion2 : MonoBehaviour
                 }
             }else if(SceneManager.GetActiveScene().name == "niveau2")
             {
-                //niveau 2 en bas de 1minutes 40secondes -- medaile or
-                if (minutes < 1 && secondes <= 60)
+                //niveau 2 en bas de 1minute -- medaile or
+                if (secondes <= 60)
                 {
                     medaileOr.SetActive(true);
                     medaileOr.GetComponent<Animator>().SetBool("victoire", true);

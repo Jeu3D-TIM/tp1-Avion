@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class GestionUI_intro : MonoBehaviour
 {
+    public Button boutonTitre;
     public Button boutonJouer;
     public Button boutonCosmetique;
     public Button boutonParametre;
@@ -15,17 +16,40 @@ public class GestionUI_intro : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        boutonJouer.GetComponent<Button>();
-        boutonJouer.onClick.AddListener(BoutonJouerAppuyer);
+        boutonTitre.onClick.AddListener(RetourAcceuil);
+
+        boutonJouer.onClick.AddListener(DeplacementBoutonAcceuil);
+        boutonJouer.onClick.AddListener(AfficherChoixNiveau);
+
+        boutonParametre.onClick.AddListener(DeplacementBoutonAcceuil);
+        boutonCosmetique.onClick.AddListener(DeplacementBoutonAcceuil);
+
     }
 
-    public void BoutonJouerAppuyer()
+    // fonction qui afficher le choix des niveaux a l'utilisateur ainsi que ses precedents records
+    public void AfficherChoixNiveau()
     {
-        SceneManager.LoadScene("jeu");
+
+    }
+
+    //fonction qui deplace les 3 boutons de l'acceuil pour faire place a l'autre interface
+    public void DeplacementBoutonAcceuil()
+    {
+        boutonJouer.GetComponent<Animator>().SetBool("deplacement", true);
+        boutonCosmetique.GetComponent<Animator>().SetBool("deplacement", true);
+        boutonParametre.GetComponent<Animator>().SetBool("deplacement", true);
+    }
+
+    //fonction qui remet les boutons de l'acceuil
+    public void RetourAcceuil()
+    {
+        boutonJouer.GetComponent<Animator>().SetBool("deplacement", false);
+        boutonCosmetique.GetComponent<Animator>().SetBool("deplacement", false);
+        boutonParametre.GetComponent<Animator>().SetBool("deplacement", false);
     }
 
     void OnDisable()
     {
-        boutonJouer.onClick.RemoveListener(BoutonJouerAppuyer);
+        boutonJouer.onClick.RemoveListener(DeplacementBoutonAcceuil);
     }
 }
